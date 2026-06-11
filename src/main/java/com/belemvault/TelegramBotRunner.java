@@ -1,11 +1,11 @@
 package com.belemvault;
 
 import com.belemvault.controller.CommandController;
-import com.belemvault.service.CommandService;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.request.SendMessage;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -14,9 +14,11 @@ import org.springframework.stereotype.Component;
 public class TelegramBotRunner implements CommandLineRunner {
     private final CommandController commandController;
 
+    @Value("${bot.token}")
+    private String token;
+
     @Override
     public void run(String... args) throws Exception {
-        var token = System.getenv("BOT_TOKEN");
         var bot = new TelegramBot(token);
 
         bot.setUpdatesListener(updates -> {
