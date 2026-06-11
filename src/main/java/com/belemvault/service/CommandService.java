@@ -1,5 +1,8 @@
 package com.belemvault.service;
 
+import org.springframework.stereotype.Service;
+
+@Service
 public class CommandService {
     public String handle(String text) {
         if (text.equalsIgnoreCase("/start")) {
