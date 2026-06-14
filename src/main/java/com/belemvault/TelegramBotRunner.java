@@ -3,6 +3,7 @@ package com.belemvault;
 import com.belemvault.controller.CommandController;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
+import com.pengrad.telegrambot.model.request.ParseMode;
 import com.pengrad.telegrambot.request.SendMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,8 +28,8 @@ public class TelegramBotRunner implements CommandLineRunner {
                 if (message != null && message.text() != null) {
                     var text = message.text();
                     var chatId = (long)message.chat().id();
-                    var output = commandController.process(text);
-                    bot.execute(new SendMessage(chatId, output));
+                    var output = commandController.process(chatId, text);
+                    bot.execute(new SendMessage(chatId, output).parseMode(ParseMode.HTML));
                 }
             }
             return UpdatesListener.CONFIRMED_UPDATES_ALL;
