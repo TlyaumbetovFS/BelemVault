@@ -16,6 +16,8 @@ public class CommandController {
             return handleList(chatId);
         } else if (text.startsWith("/add ")) {
             return handleAdd(chatId, text);
+        } else if (text.startsWith("/delete ")) {
+            return handleDelete(chatId, text);
         }
         return "Неизвестная команда";
     }
@@ -30,7 +32,7 @@ public class CommandController {
         var sb = new StringBuilder();
 
         for (var word : words) {
-            sb.append(word.getWord()).append(" - ").append("<tg-spoiler>").append(word.getTranslation()).append("</tg-spoiler>").append("\n");
+            sb.append(word.getWord()).append(" - ").append(word.getTranslation()).append("\n");
         }
 
         return sb.toString();
@@ -56,8 +58,32 @@ public class CommandController {
             return "Использование: /add слово - перевод";
         }
 
-        wordService.addWord(chatId, word, translation);
+        if (wordService.addWord(chatId, word, translation)) {
+            return "Слово: " + word + " успешно сохранено!";
+        }
 
-        return "Слово: " + word + " успешно сохранено!";
+        return "Слово: " + word + " уже есть в списке";
+    }
+
+    private String handleDelete(Long chatId, String text) {
+        var args = text.split(" ", 2);
+
+        if (args.length != 2) {
+            return "Использование: /delete слово";
+        }
+
+        var word = args[1].trim();
+
+        if (word.isBlank()) {
+            return "Использование: /delete слово";
+        }
+
+        var isFound = wordService.deleteWord(chatId, word);
+
+        if (isFound) {
+            return "Слово: " + word + " успешно удалено!";
+        }
+
+        return "Слово: " + word + " не найдено!";
     }
 }

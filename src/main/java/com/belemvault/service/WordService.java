@@ -16,15 +16,20 @@ public class WordService {
     private final UserService userService;
 
     @Transactional
-    public Word addWord(Long chatId, String word, String translation) {
+    public boolean addWord(Long chatId, String word, String translation) {
         var user = userService.findOrCreate(chatId);
+
+        if (wordRepository.findByUserIdAndWord(user.getId(), word).isPresent()) {
+            return false;
+        }
 
         var newWord = new Word();
         newWord.setWord(word);
         newWord.setTranslation(translation);
         newWord.setUser(user);
 
-        return wordRepository.save(newWord);
+        wordRepository.save(newWord);
+        return true;
     }
 
     @Transactional(readOnly = true)
@@ -32,5 +37,23 @@ public class WordService {
         return userService.find(chatId)
                 .map(user -> wordRepository.findByUserId(user.getId()))
                 .orElse(List.of());
+    }
+
+    @Transactional
+    public boolean deleteWord(Long chatId, String word) {
+        var user = userService.find(chatId);
+
+        if (user.isEmpty()) {
+            return false;
+        }
+
+        var found = wordRepository.findByUserIdAndWord(user.get().getId(), word);
+
+        if (found.isEmpty()) {
+            return false;
+        }
+
+        wordRepository.delete(found.get());
+        return true;
     }
 }

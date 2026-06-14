@@ -11,7 +11,9 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name = "words")
+@Table(name = "words", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"user_id", "word"})
+})
 public class Word {
 
     @Id
